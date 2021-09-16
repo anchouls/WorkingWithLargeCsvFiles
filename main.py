@@ -1,27 +1,28 @@
 import queue
 import time
+
 t1 = time.time()
+top_size = 10
+max_time = float('inf')
+
 with open('ratings.csv', 'r') as f:
-    best = queue.PriorityQueue(maxsize=11)
+    best = queue.PriorityQueue(maxsize=10)
     i = 0
     for n, line in enumerate(f):
         if n == 0:
-            i = line.split(',').index("timestamp\n")
+            i = line.strip().split(',').index("timestamp")
             continue
-        best.put(-int(line.split(',')[i]))
-        if n > 10:
-            best.get()
+        item = int(line.split(',')[i])
+        if n > top_size:
+            if item < max_time:
+                best.get()
+                best.put(-item)
+                max_time = -best.queue[0]
+        else:
+            best.put(-item)
+            max_time = -best.queue[0]
 
-    for i in range(10):
+    for i in range(top_size):
         print(-best.get())
 t2 = time.time()
 print(f"Time: {t2-t1}")
-#
-# bufsize = 65536
-# with open(path) as infile:
-#     while True:
-#         lines = infile.readlines(bufsize)
-#         if not lines:
-#             break
-#         for line in lines:
-#             process(line)
