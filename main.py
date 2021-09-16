@@ -1,7 +1,5 @@
 import queue
-import time
 
-t1 = time.time()
 top_size = 10
 max_time = float('inf')
 
@@ -16,13 +14,11 @@ with open('ratings.csv', 'r') as f:
         if n > top_size:
             if item < max_time:
                 best.get()
-                best.put(-item)
-                max_time = -best.queue[0]
+                best.put((-item, -n, line))
+                max_time = -best.queue[0][0]
         else:
-            best.put(-item)
-            max_time = -best.queue[0]
+            best.put((-item, -n, line))
+            max_time = -best.queue[0][0]
 
-    for i in range(top_size):
-        print(-best.get())
-t2 = time.time()
-print(f"Time: {t2-t1}")
+    while not best.empty():
+        print(best.get()[2].strip())
